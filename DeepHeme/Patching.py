@@ -51,7 +51,6 @@ def generate_patches(slidepath,slidename,  patch_size,
             cv2.imwrite(f"{savepath}/{slidename.split('.ndpi')[0]}patches/patch_{str(_x)}_{str(_y)}.png", patching)
 
 if __name__ == '__main__':
-    print('wtf')
 
     generate_patches(slidepath=args.wsi_dir,
                      slidename=args.wsi_name,
