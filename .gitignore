@@ -3,6 +3,9 @@
 *.pt
 *.pth
 
+# jupyter notebook
+*.ipynb
+
 # large files
 *.zip
 
