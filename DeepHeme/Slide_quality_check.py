@@ -388,7 +388,7 @@ def get_high_red_signal_mask(image, prop_black=0.75, bins=1024, median_blur_size
     sum_channels = sum_channels + 1e-7
 
     # Normalize the blue channel by the sum
-    image[:, :, 2] = image[:, :, 2] / sum_channels[:, :, 2]
+    image[:, :, 2] = image[:, :, 2] / sum_channels[:, :, 0]
 
     # Now, image has the normalized blue channel, and all other channels as they were.
     # If you want to zero out the other channels, you can do it now
@@ -550,7 +550,7 @@ def get_high_green_signal_mask(image, prop_black=0.75, bins=1024, median_blur_si
     sum_channels = sum_channels + 1e-7
 
     # Normalize the blue channel by the sum
-    image[:, :, 1] = image[:, :, 1] / sum_channels[:, :, 1]
+    image[:, :, 1] = image[:, :, 1] / sum_channels[:, :, 0]
 
     # Now, image has the normalized blue channel, and all other channels as they were.
     # If you want to zero out the other channels, you can do it now
