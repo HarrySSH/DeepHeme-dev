@@ -598,6 +598,28 @@ def is_touch_prep(image, verbose=False, erosion_radius=75, median_blur_size=75):
     # if the white pixels in background mask  are less than 25% of the total pixels, then the image is a touch prep
     non_removed_prop = np.sum(background_mask) / \
         (np.prod(background_mask.shape) * 255)
+    
+    if verbose:
+        print("the white pixels in background mask  are {non_removed_prop} percent of the total pixels" )
+
+    return non_removed_prop < 0.25
+
+def is_pb(image, verbose=False, erosion_radius=75, median_blur_size=75):
+    """ Return whether or not the image (top view of a whole slide image) is a touch prep. """
+
+    background_mask = get_background_mask(
+        image, verbose=verbose, erosion_radius=erosion_radius, median_blur_size=median_blur_size)
+
+    if verbose:
+        # display the mask
+        plt.figure()
+        plt.title("Background Mask")
+        plt.imshow(background_mask, cmap="gray")
+        plt.show()
+
+    # if the white pixels in background mask  are less than 25% of the total pixels, then the image is a touch prep
+    non_removed_prop = np.sum(background_mask) / \
+        (np.prod(background_mask.shape) * 255)
 
     return non_removed_prop < 0.25
 

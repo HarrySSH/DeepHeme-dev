@@ -2,6 +2,7 @@
 *.ckpt
 *.pt
 *.pth
+*Siqi
 
 # jupyter notebook
 *.ipynb
