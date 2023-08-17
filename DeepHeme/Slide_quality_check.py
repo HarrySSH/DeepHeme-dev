@@ -220,6 +220,7 @@ def get_high_blue_signal_mask(image, prop_black=0.75, bins=1024, median_blur_siz
     # Convert to float32 to prevent overflow during division
     image = image.astype(np.float32)
 
+
     # Compute the sum over the color channels
     sum_channels = np.sum(image, axis=2, keepdims=True)
 
@@ -899,7 +900,7 @@ def get_top_view_preselection_mask(image, verbose=False):
     background_mask = get_background_mask(image, verbose=verbose)
 
     # combine the two masks
-    final_blue_mask = cv2.bitwise_and(high_blue, obstructor_mask)
+    final_blue_mask = cv2.bitwise_or(high_blue, obstructor_mask)
 
     final_mask = marrow_boxing(final_blue_mask, image,
                                background_mask, box_ratio=0.12, verbose=verbose)
