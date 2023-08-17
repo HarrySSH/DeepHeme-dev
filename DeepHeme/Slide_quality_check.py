@@ -600,7 +600,7 @@ def is_touch_prep(image, verbose=False, erosion_radius=75, median_blur_size=75):
         (np.prod(background_mask.shape) * 255)
     
     if verbose:
-        print("the white pixels in background mask  are {non_removed_prop} percent of the total pixels" )
+        print(f"the white pixels in background mask  are {non_removed_prop} percent of the total pixels" )
 
     return non_removed_prop < 0.25
 
