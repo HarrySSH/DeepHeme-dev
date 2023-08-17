@@ -214,6 +214,9 @@ def get_high_blue_signal_mask(image, prop_black=0.75, bins=1024, median_blur_siz
     #         # end the program
     #         sys.exit()
 
+    # convert image from RGB to BGR format 
+    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+
     # Convert to float32 to prevent overflow during division
     image = image.astype(np.float32)
 
@@ -339,6 +342,328 @@ def get_high_blue_signal_mask(image, prop_black=0.75, bins=1024, median_blur_siz
 
     return image
 
+def get_high_red_signal_mask(image, prop_black=0.75, bins=1024, median_blur_size=3, dilation_kernel_size=9, verbose=False):
+    """
+    Return a mask that covers the high blue signal in the image.
+    """
+
+    # # Apply pyramid mean shift filtering to image
+    # image = cv2.pyrMeanShiftFiltering(image, 21, 51)
+    # if verbose:
+    #     try:
+    #         # display the image and pause the execution until the user presses a key
+    #         cv2.imshow("PMSF", image)
+    #         cv2.waitKey(0)
+    #         # close all windows
+    #         cv2.destroyAllWindows()
+    #     except KeyboardInterrupt:
+    #         print("KeyboardInterrupt")
+    #         # end the program
+    #         sys.exit()
+
+    # # Apply a blur filter to image
+    # image = cv2.blur(image, (5,5))
+    # if verbose:
+    #     try:
+    #         # display the image and pause the execution until the user presses a key
+    #         cv2.imshow("Blur", image)
+    #         cv2.waitKey(0)
+    #         # close all windows
+    #         cv2.destroyAllWindows()
+    #     except KeyboardInterrupt:
+    #         print("KeyboardInterrupt")
+    #         # end the program
+    #         sys.exit()
+
+    # convert image from RGB to BGR format 
+    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+
+    # Convert to float32 to prevent overflow during division
+    image = image.astype(np.float32)
+
+    # Compute the sum over the color channels
+    sum_channels = np.sum(image, axis=2, keepdims=True)
+
+    # To avoid division by zero, we can add a small constant
+    sum_channels = sum_channels + 1e-7
+
+    # Normalize the blue channel by the sum
+    image[:, :, 2] = image[:, :, 2] / sum_channels[:, :, 2]
+
+    # Now, image has the normalized blue channel, and all other channels as they were.
+    # If you want to zero out the other channels, you can do it now
+    image[:, :, 0] = 0  # zero out blue channel
+    image[:, :, 1] = 0  # zero out green channel
+
+    # Before saving, convert back to uint8
+    image = np.clip(image, 0, 1) * 255
+    image = image.astype(np.uint8)
+
+    if verbose:
+        try:
+            # display the image and pause the execution until the user presses a key
+            cv2.imshow("Blue Channel", image)
+            cv2.waitKey(0)
+            # close all windows
+            cv2.destroyAllWindows()
+        except KeyboardInterrupt:
+            print("KeyboardInterrupt")
+            # end the program
+            sys.exit()
+
+    # convert image to grayscale
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    if verbose:
+        try:
+            # display the image and pause the execution until the user presses a key
+            cv2.imshow("Grayscale", image)
+            cv2.waitKey(0)
+            # close all windows
+            cv2.destroyAllWindows()
+        except KeyboardInterrupt:
+            print("KeyboardInterrupt")
+            # end the program
+            sys.exit()
+
+    # # Apply a laplacian filter to image
+    # image = cv2.Laplacian(image, cv2.CV_64F)
+    # image = np.absolute(image)  # Absolute value
+    # image = np.uint8(255 * (image / np.max(image)))  # Normalize to 0-255
+    # if verbose:
+    #     try:
+    #         # display the image and pause the execution until the user presses a key
+    #         cv2.imshow("Laplacian", image)
+    #         cv2.waitKey(0)
+    #         # close all windows
+    #         cv2.destroyAllWindows()
+    #     except KeyboardInterrupt:
+    #         print("KeyboardInterrupt")
+    #         # end the program
+    #         sys.exit()
+
+    # apply a median blur to the image to get rid of salt and pepper noise
+    image = cv2.medianBlur(image, median_blur_size)
+    if verbose:
+        try:
+            # display the image and pause the execution until the user presses a key
+            cv2.imshow("Median Blur", image)
+            cv2.waitKey(0)
+            # close all windows
+            cv2.destroyAllWindows()
+        except KeyboardInterrupt:
+            print("KeyboardInterrupt")
+            # end the program
+            sys.exit()
+
+    # dilate the image to get rid of small holes
+    kernel = np.ones((dilation_kernel_size, dilation_kernel_size), np.uint8)
+    image = cv2.dilate(image, kernel, iterations=1)
+    if verbose:
+        try:
+            # display the image and pause the execution until the user presses a key
+            cv2.imshow("Dilate", image)
+            cv2.waitKey(0)
+            # close all windows
+            cv2.destroyAllWindows()
+        except KeyboardInterrupt:
+            print("KeyboardInterrupt")
+            # end the program
+            sys.exit()
+
+    # # erode the image to get rid of small protrusions
+    # kernel = np.ones((5,5),np.uint8)
+    # image = cv2.erode(image, kernel, iterations = 1)
+    # if verbose:
+    #     try:
+    #         # display the image and pause the execution until the user presses a key
+    #         cv2.imshow("Erode", image)
+    #         cv2.waitKey(0)
+    #         # close all windows
+    #         cv2.destroyAllWindows()
+    #     except KeyboardInterrupt:
+    #         print("KeyboardInterrupt")
+    #         # end the program
+    #         sys.exit()
+
+    # threshold the image to get a black and white image with solid white areas, be generous with the threshold
+    # tally up the histogram of the image's greyscale values, and choose the threshold just before the peak
+    threshold = get_threshold(image, prop_black=prop_black, bins=bins)
+    image = cv2.threshold(image, threshold, 255, cv2.THRESH_BINARY)[1]
+    if verbose:
+        try:
+            # display the image and pause the execution until the user presses a key
+            cv2.imshow("Threshold", image)
+            cv2.waitKey(0)
+            # close all windows
+            cv2.destroyAllWindows()
+        except KeyboardInterrupt:
+            print("KeyboardInterrupt")
+            # end the program
+            sys.exit()
+
+    return image
+
+
+def get_high_red_signal_mask(image, prop_black=0.75, bins=1024, median_blur_size=3, dilation_kernel_size=9, verbose=False):
+    """
+    Return a mask that covers the high blue signal in the image.
+    """
+
+    # # Apply pyramid mean shift filtering to image
+    # image = cv2.pyrMeanShiftFiltering(image, 21, 51)
+    # if verbose:
+    #     try:
+    #         # display the image and pause the execution until the user presses a key
+    #         cv2.imshow("PMSF", image)
+    #         cv2.waitKey(0)
+    #         # close all windows
+    #         cv2.destroyAllWindows()
+    #     except KeyboardInterrupt:
+    #         print("KeyboardInterrupt")
+    #         # end the program
+    #         sys.exit()
+
+    # # Apply a blur filter to image
+    # image = cv2.blur(image, (5,5))
+    # if verbose:
+    #     try:
+    #         # display the image and pause the execution until the user presses a key
+    #         cv2.imshow("Blur", image)
+    #         cv2.waitKey(0)
+    #         # close all windows
+    #         cv2.destroyAllWindows()
+    #     except KeyboardInterrupt:
+    #         print("KeyboardInterrupt")
+    #         # end the program
+    #         sys.exit()
+
+    # convert image from RGB to BGR format 
+    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+
+    # Convert to float32 to prevent overflow during division
+    image = image.astype(np.float32)
+
+    # Compute the sum over the color channels
+    sum_channels = np.sum(image, axis=2, keepdims=True)
+
+    # To avoid division by zero, we can add a small constant
+    sum_channels = sum_channels + 1e-7
+
+    # Normalize the blue channel by the sum
+    image[:, :, 1] = image[:, :, 1] / sum_channels[:, :, 1]
+
+    # Now, image has the normalized blue channel, and all other channels as they were.
+    # If you want to zero out the other channels, you can do it now
+    image[:, :, 0] = 0  # zero out blue channel
+    image[:, :, 2] = 0  # zero out red channel
+
+    # Before saving, convert back to uint8
+    image = np.clip(image, 0, 1) * 255
+    image = image.astype(np.uint8)
+
+    if verbose:
+        try:
+            # display the image and pause the execution until the user presses a key
+            cv2.imshow("Blue Channel", image)
+            cv2.waitKey(0)
+            # close all windows
+            cv2.destroyAllWindows()
+        except KeyboardInterrupt:
+            print("KeyboardInterrupt")
+            # end the program
+            sys.exit()
+
+    # convert image to grayscale
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    if verbose:
+        try:
+            # display the image and pause the execution until the user presses a key
+            cv2.imshow("Grayscale", image)
+            cv2.waitKey(0)
+            # close all windows
+            cv2.destroyAllWindows()
+        except KeyboardInterrupt:
+            print("KeyboardInterrupt")
+            # end the program
+            sys.exit()
+
+    # # Apply a laplacian filter to image
+    # image = cv2.Laplacian(image, cv2.CV_64F)
+    # image = np.absolute(image)  # Absolute value
+    # image = np.uint8(255 * (image / np.max(image)))  # Normalize to 0-255
+    # if verbose:
+    #     try:
+    #         # display the image and pause the execution until the user presses a key
+    #         cv2.imshow("Laplacian", image)
+    #         cv2.waitKey(0)
+    #         # close all windows
+    #         cv2.destroyAllWindows()
+    #     except KeyboardInterrupt:
+    #         print("KeyboardInterrupt")
+    #         # end the program
+    #         sys.exit()
+
+    # apply a median blur to the image to get rid of salt and pepper noise
+    image = cv2.medianBlur(image, median_blur_size)
+    if verbose:
+        try:
+            # display the image and pause the execution until the user presses a key
+            cv2.imshow("Median Blur", image)
+            cv2.waitKey(0)
+            # close all windows
+            cv2.destroyAllWindows()
+        except KeyboardInterrupt:
+            print("KeyboardInterrupt")
+            # end the program
+            sys.exit()
+
+    # dilate the image to get rid of small holes
+    kernel = np.ones((dilation_kernel_size, dilation_kernel_size), np.uint8)
+    image = cv2.dilate(image, kernel, iterations=1)
+    if verbose:
+        try:
+            # display the image and pause the execution until the user presses a key
+            cv2.imshow("Dilate", image)
+            cv2.waitKey(0)
+            # close all windows
+            cv2.destroyAllWindows()
+        except KeyboardInterrupt:
+            print("KeyboardInterrupt")
+            # end the program
+            sys.exit()
+
+    # # erode the image to get rid of small protrusions
+    # kernel = np.ones((5,5),np.uint8)
+    # image = cv2.erode(image, kernel, iterations = 1)
+    # if verbose:
+    #     try:
+    #         # display the image and pause the execution until the user presses a key
+    #         cv2.imshow("Erode", image)
+    #         cv2.waitKey(0)
+    #         # close all windows
+    #         cv2.destroyAllWindows()
+    #     except KeyboardInterrupt:
+    #         print("KeyboardInterrupt")
+    #         # end the program
+    #         sys.exit()
+
+    # threshold the image to get a black and white image with solid white areas, be generous with the threshold
+    # tally up the histogram of the image's greyscale values, and choose the threshold just before the peak
+    threshold = get_threshold(image, prop_black=prop_black, bins=bins)
+    image = cv2.threshold(image, threshold, 255, cv2.THRESH_BINARY)[1]
+    if verbose:
+        try:
+            # display the image and pause the execution until the user presses a key
+            cv2.imshow("Threshold", image)
+            cv2.waitKey(0)
+            # close all windows
+            cv2.destroyAllWindows()
+        except KeyboardInterrupt:
+            print("KeyboardInterrupt")
+            # end the program
+            sys.exit()
+
+    return image
 
 def first_min_after_first_max(local_minima, local_maxima, first_n=2):
     """Returns the first local minimum after the first local maximum"""
