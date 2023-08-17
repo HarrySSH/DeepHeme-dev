@@ -16,6 +16,10 @@ from tqdm import tqdm
 from multiprocessing import Pool  
 from functools import partial 
 
+### ray is a library for parallel computing
+### Neo use this!
+
+
 ### this is a function that leverage the low resolution mask to guide patching the high resolution image
 
 

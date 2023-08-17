@@ -1,9 +1,13 @@
+### This file contains functions that check the quality of the image. ###
+### It have all the functions that help remove slides that is not bone marrow aspirate ###
+### It also have functions that help remove slides that is not stained properly ###
+
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
 import os
-
+from utils.image_basics import convert_4_to_3, convert_to_grayscale, laplacian, fourier
 
 def last_min_before_last_max(local_minima, local_maxima, last_n=1):
     """Returns the last local minimum before the last local maximum"""
@@ -181,7 +185,7 @@ def get_threshold(img, prop_black=0.3, bins=1024):
 """ Apply a number of cv2 filters to the image specified in image_path. If verbose is True, the image will be displayed after each filter is applied, and the user will be prompted to continue. If verbose is False, the image will not be displayed, and the user will not be prompted to continue. """
 
 
-def get_high_blue_signal_mask(image, prop_black=0.75, bins=1024, median_blur_size=3, dilation_kernel_size=9, verbose=False):
+def get_high_single_channel_signal_mask(image, prop_black=0.75, bins=1024, median_blur_size=3, dilation_kernel_size=9, verbose=False, channel =None):
     """
     Return a mask that covers the high blue signal in the image.
     """
@@ -223,13 +227,34 @@ def get_high_blue_signal_mask(image, prop_black=0.75, bins=1024, median_blur_siz
     # To avoid division by zero, we can add a small constant
     sum_channels = sum_channels + 1e-7
 
-    # Normalize the blue channel by the sum
-    image[:, :, 0] = image[:, :, 0] / sum_channels[:, :, 0]
-
-    # Now, image has the normalized blue channel, and all other channels as they were.
-    # If you want to zero out the other channels, you can do it now
-    image[:, :, 1] = 0  # zero out green channel
-    image[:, :, 2] = 0  # zero out red channel
+    if channel is None:
+        raise ValueError("Please specify the channel to use")
+    elif channel not in ['r', 'g', 'b']:
+        raise ValueError("Please specify the channel to use as 'r', 'g', or 'b'")
+    elif channel == 'b':
+        # Normalize the blue channel by the sum
+        image[:, :, 0] = image[:, :, 0] / sum_channels[:, :, 0] 
+        # Now, image has the normalized blue channel, and all other channels as they were.
+        # If you want to zero out the other channels, you can do it now
+        image[:, :, 1] = 0  # zero out green channel
+        image[:, :, 2] = 0  # zero out red channel
+    elif channel == 'g':
+        # Normalize the green channel by the sum
+        image[:, :, 1] = image[:, :, 1] / sum_channels[:, :, 0] 
+        # Now, image has the normalized green channel, and all other channels as they were.
+        # If you want to zero out the other channels, you can do it now
+        image[:, :, 0] = 0
+        image[:, :, 2] = 0
+    elif channel == 'r':
+        # Normalize the red channel by the sum
+        image[:, :, 2] = image[:, :, 2] / sum_channels[:, :, 0] 
+        # Now, image has the normalized red channel, and all other channels as they were.
+        # If you want to zero out the other channels, you can do it now
+        image[:, :, 0] = 0
+        image[:, :, 1] = 0
+    else:
+        ### stop the implementation because the channel is not specified correctly
+        raise ValueError("Please specify the channel to use as 'r', 'g', or 'b'")
 
     # Before saving, convert back to uint8
     image = np.clip(image, 0, 1) * 255
@@ -238,7 +263,7 @@ def get_high_blue_signal_mask(image, prop_black=0.75, bins=1024, median_blur_siz
     if verbose:
         try:
             # display the image and pause the execution until the user presses a key
-            cv2.imshow("Blue Channel", image)
+            cv2.imshow(f"{channel} Channel", image)
             cv2.waitKey(0)
             # close all windows
             cv2.destroyAllWindows()
@@ -565,8 +590,8 @@ def get_top_view_preselection_mask(image, verbose=False, RGB = False):
     if RGB:
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
     
-    high_blue = get_high_blue_signal_mask(
-        image, prop_black=0.75, median_blur_size=3, dilation_kernel_size=9, verbose=verbose)
+    high_blue = get_high_single_channel_signal_mask(
+        image, prop_black=0.75, median_blur_size=3, dilation_kernel_size=9, verbose=verbose, channel='b')
 
     # get the obstructor mask
     obstructor_mask = get_obstructor_mask(image, verbose=verbose)
@@ -602,6 +627,78 @@ def is_touch_prep(image, verbose=False, erosion_radius=75, median_blur_size=75):
 
     return non_removed_prop < 0.25
 
+
+def is_peripheral_blood(image, verbose = False, erosion_radius=75, median_blur_size=75):
+    """ Return whether or not the image (top view of a whole slide image) is a peripheral blood smear. """
+    if verbose:
+        print('Please make sure the image is in BGR format')
+    background_mask = get_background_mask(
+        image, verbose=verbose, erosion_radius=erosion_radius, median_blur_size=median_blur_size)
+
+    if verbose:
+        # display the mask
+        plt.figure()
+        plt.title("Background Mask")
+        plt.imshow(background_mask, cmap="gray")
+        plt.show()
+
+    # if the white pixels in background mask  are less than 25% of the total pixels, then the image is a touch prep
+    non_removed_prop = np.sum(background_mask) / \
+        (np.prod(background_mask.shape) * 255)
+
+    if non_removed_prop<0.4:
+        return False
+    else:
+        # calculating the laplacian of the image
+        laplacian_image_var = laplacian(image)
+        raise NotImplementedError, print("Not calculated yet")
+
+        if laplacian_image_var > 500:
+            return True
+        else:
+            return False
+        
+def is_iron_staining(image, verbose = False, erosion_radius=75, median_blur_size=75):
+    """ The input is a cv2 image which is a np array in BGR format. Output a binary mask used to region preselection. """
+    if verbose:
+        print('Please make sure the image is in BGR format')
+    background_mask = get_background_mask(
+        image, verbose=verbose, erosion_radius=erosion_radius, median_blur_size=median_blur_size)
+    
+    if verbose:
+        # display the mask
+        plt.figure()
+        plt.title("Background Mask")
+        plt.imshow(background_mask, cmap="gray")
+        plt.show()
+
+    # if the white pixels in background mask  are less than 25% of the total pixels, then the image is a touch prep
+    non_removed_prop = np.sum(background_mask) / \
+        (np.prod(background_mask.shape) * 255)
+
+    
+    
+    
+    high_red = get_high_single_channel_signal_mask(
+        image, prop_black=0.75, median_blur_size=3, dilation_kernel_size=9, verbose=verbose, channel='r')
+
+    
+
+    if non_removed_prop<0.4:
+        return False
+    else:
+        # calculating the laplacian of the image
+        laplacian_image_var = laplacian(image)
+        raise NotImplementedError, print("Not calculated yet")
+    
+        non_removed_prop = np.sum(background_mask) / \
+        (np.prod(background_mask.shape) * 255)
+        return non_removed_prop > 0.5
+    
+    # please this onhold, I might need to calculate the laplacian as well
+    
+
+    
 
 if __name__ == '__main__':
     image_rel_path = "bone_marrow_example.png"
