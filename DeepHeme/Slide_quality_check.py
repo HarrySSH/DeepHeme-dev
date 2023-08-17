@@ -350,7 +350,7 @@ def first_min_after_first_max(local_minima, local_maxima, first_n=2):
 def get_obstructor_mask(image, erosion_radius=25, median_blur_size=25, verbose=False, first_n=2, apply_blur=False):
     """ Returns a mask that covers the complement of the obstructor in the image. """
     # All my other codes is using RGB as the input, for this case I need to use BGR
-    image = cv2.cvtColor(image, cv2.COLOR_RBG2BGR)
+    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
     # Convert the image to grayscale
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
