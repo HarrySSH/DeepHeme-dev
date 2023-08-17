@@ -344,7 +344,7 @@ def get_high_blue_signal_mask(image, prop_black=0.75, bins=1024, median_blur_siz
 
 def get_high_red_signal_mask(image, prop_black=0.75, bins=1024, median_blur_size=3, dilation_kernel_size=9, verbose=False):
     """
-    Return a mask that covers the high blue signal in the image.
+    Return a mask that covers the high red signal in the image.
     """
 
     # # Apply pyramid mean shift filtering to image
@@ -504,9 +504,9 @@ def get_high_red_signal_mask(image, prop_black=0.75, bins=1024, median_blur_size
     return image
 
 
-def get_high_red_signal_mask(image, prop_black=0.75, bins=1024, median_blur_size=3, dilation_kernel_size=9, verbose=False):
+def get_high_green_signal_mask(image, prop_black=0.75, bins=1024, median_blur_size=3, dilation_kernel_size=9, verbose=False):
     """
-    Return a mask that covers the high blue signal in the image.
+    Return a mask that covers the high green signal in the image.
     """
 
     # # Apply pyramid mean shift filtering to image
