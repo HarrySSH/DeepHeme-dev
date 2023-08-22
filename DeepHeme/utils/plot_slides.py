@@ -104,3 +104,6 @@ class WholeSlideImageVisualizer:
             final_image[x * patch_shape[0]:(x + 1) * patch_shape[0], y * patch_shape[1]:(y + 1) * patch_shape[1]] = patch  
     
         return final_image 
+    
+
+
