@@ -5,11 +5,13 @@ import openslide
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 def visualize_whole_slide_using_open_slide(image_dir = None,
-                         level = 0, return_image = False):
+                         level = 0, return_image = False, show = True):
     ### Visualize whole slide image
     '''
     image_dir: path to whole slide image
     level: level of whole slide image
+    return_image: whether to return the image
+    show: whether to show the image
     '''
     img_path = image_dir
     slide = openslide.OpenSlide(img_path)
@@ -17,8 +19,9 @@ def visualize_whole_slide_using_open_slide(image_dir = None,
     #size = (6600, 3240)
     size = slide.level_dimensions[level]
     region = slide.read_region(region, level, size)
-    plt.figure(figsize=(20, 20))
-    plt.imshow(region)
+    if show:
+        plt.figure(figsize=(20, 20))
+        plt.imshow(region)
     
     if return_image:
         return region
