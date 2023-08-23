@@ -53,10 +53,14 @@ def get_white_mask(image, verbose=False):
 
     # find the local minima
     local_minima = []
+
     for i in range(1, len(histogram)-1):
 
-        if histogram[i-1] > histogram[i] < histogram[i+1]:
+        if histogram[i-1] > histogram[i] and histogram[i] < histogram[i+1]:
             local_minima.append(bin_midpoints[i])
+        
+        if len(local_minima) ==0:
+            local_minima.append(bin_midpoints[0])
 
     # find the local maxima
     local_maxima = []
@@ -87,6 +91,27 @@ def get_white_mask(image, verbose=False):
 
     # get a mask that contains all pixels with intensity smaller than the first local minimum right after the first peak
     mask = np.zeros(gray_image.shape, dtype="uint8")
+    
+    # check if the value is None
+    if last_min_before_last_max(local_minima, local_maxima) is None:
+        ### plot the image
+        
+        plt.figure()
+        plt.title("Image")
+        plt.imshow(image)
+        plt.show()
+        
+        ### plot the histogram
+        plt.figure()
+        plt.title("Grayscale Histogram")
+        plt.xlabel("Bins")
+        plt.ylabel("# of Pixels")
+        plt.plot(bin_midpoints, histogram)
+        plt.xlim([0, 256])
+        plt.show()
+
+
+
     mask[gray_image > last_min_before_last_max(
         local_minima, local_maxima)] = 255
 
@@ -651,7 +676,9 @@ def is_peripheral_blood(image, verbose = False, erosion_radius=75, median_blur_s
     else:
         # calculating the laplacian of the image
         laplacian_image_var = laplacian(image)
-        raise NotImplementedError, print("Not calculated yet")
+        if 1==2:
+            pass
+            #raise NotImplementedError, print("Not calculated yet")
 
         if laplacian_image_var > 500:
             return True
@@ -689,11 +716,11 @@ def is_iron_staining(image, verbose = False, erosion_radius=75, median_blur_size
     else:
         # calculating the laplacian of the image
         laplacian_image_var = laplacian(image)
-        raise NotImplementedError, print("Not calculated yet")
-    
-        non_removed_prop = np.sum(background_mask) / \
-        (np.prod(background_mask.shape) * 255)
-        return non_removed_prop > 0.5
+        if 1==2:
+            #raise NotImplementedError, print("Not calculated yet")
+            non_removed_prop = np.sum(background_mask) / \
+            (np.prod(background_mask.shape) * 255)
+            return non_removed_prop > 0.5
     
     # please this onhold, I might need to calculate the laplacian as well
     
