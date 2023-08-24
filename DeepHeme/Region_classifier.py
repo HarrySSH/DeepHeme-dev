@@ -83,12 +83,7 @@ checkpoint  = remove_data_parallel(checkpoint['model_state_dict'])
 
 My_model.load_state_dict(checkpoint, strict=True)
 
-transform_pipeline = albumentations.Compose(
-        [
-            albumentations.Normalize(mean=(0.5637, 0.5637, 0.5637), std=(0.2381, 0.2381, 0.2381)),
 
-        ]
-    )
 
 from tqdm import tqdm
 My_model = My_model.cuda().eval()
