@@ -16,6 +16,8 @@ from tqdm import tqdm
 from multiprocessing import Pool  
 from functools import partial 
 
+import argparse
+
 from concurrent.futures import ThreadPoolExecutor 
 from concurrent.futures import ThreadPoolExecutor, as_completed  
 
@@ -145,7 +147,26 @@ class patching_based_on_mask():
 # main function
 if __name__ == '__main__':
     ### use openslide to read the high resolution image
-    high_res_image_ndpi = openslide.OpenSlide('/Users/ssun2/Documents/DeepHeme/H17-6116_S10_MSK6_2023-04-27_18.30.44.ndpi')
+
+    # add args.slide_dir as input
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('--wsi_dir', type=str,
+                    help='Directory in which the WSIs that you want to patch are stored')
+
+    parser.add_argument('--wsi_name', type=str,
+                        help='Name of the wsi slide')
+
+
+
+    parser.add_argument('--patch_size', default=512, type=int,
+                        help='The size of the patches')
+    
+    args = parser.parse_args()
+    
+    slide_path = os.path.join(args.wsi_dir, args.wsi_name)
+
+    high_res_image_ndpi = openslide.OpenSlide(slide_path)
     ### get the levels of openslide object
     _level = high_res_image_ndpi.level_count - 1
     ### get the lowest resolution of the high resolution image
@@ -171,8 +192,8 @@ if __name__ == '__main__':
                                               high_res_image_ndpi=high_res_image_ndpi, 
                                               patch_size=512, 
                                               overlap_threshold=0.5, 
-                                              savepath='/Users/ssun2/Documents/DeepHeme/patches', 
-                                              slidename='H17-6116_S10_MSK6_2023-04-27_18.30.44.ndpi')
+                                              savepath=args.wsi_dir.replace('slides','patches'), 
+                                              slidename=args.wsi_name)
     
     #patching_machine.patch_high_res_image(save=True,num_processes=1)
 
