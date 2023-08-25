@@ -127,7 +127,7 @@ predictions = transformed_ds.map_batches(
     deepheme_base,
     compute=ray.data.ActorPoolStrategy(
         size=3
-    ),  # Use 4 GPUs. Change this number based on the number of GPUs in your cluster.
+    ),  # Use 3 GPUs. Change this number based on the number of GPUs in your cluster.
     num_gpus=1,  # Specify 1 GPU per model replica.
     batch_size=256,  # Use the largest batch size that can fit on our GPUs
 )
@@ -141,7 +141,15 @@ if not os.path.exists(result_dir):
 
 predictions.drop_columns(["original_image"])
 print('Saving results')
-pq.write_table(predictions, f"{result_dir}predictions.parquet")
+#pq.write_table(predictions, f"{result_dir}predictions.parquet") wrong codes
+
+dfs = []  
+for batch in predictions:  
+    dfs.append(pd.DataFrame(batch))  
+  
+result_df = pd.concat(dfs, axis=0, ignore_index=True) 
+### save the results
+result_df.to_csv(f"{result_dir}predictions.tsv", sep='\t', index=False)
 #predictions.drop_columns(["original_image"]).write_parquet(f"{result_dir}predictions.parquet")
 ### also drop the column when the images is not predicted as adequate
 #predictions[predictions["predicted_label"] != "adequate"].drop_columns(["original_image"]).write_parquet(f"{result_dir}predictions_no_adequate.parquet")
