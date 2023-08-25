@@ -144,10 +144,10 @@ print('Saving results')
 #pq.write_table(predictions, f"{result_dir}predictions.parquet") wrong codes
 
 dfs = []  
-for batch in predictions:  
-    dfs.append(pd.DataFrame(batch))  
+for batch in predictions.iter_batches(batch_format="pandas"):  
+    dfs.append(batch)  
   
-result_df = pd.concat(dfs, axis=0, ignore_index=True) 
+result_df = pd.concat(dfs, axis=0, ignore_index=True)  
 ### save the results
 result_df.to_csv(f"{result_dir}predictions.tsv", sep='\t', index=False)
 #predictions.drop_columns(["original_image"]).write_parquet(f"{result_dir}predictions.parquet")
