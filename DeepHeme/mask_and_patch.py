@@ -88,8 +88,6 @@ class patching_based_on_mask():
         ### compute the overlap between the patch and the mask
         ratio = int(WSI_shape[0]/low_res_mask.shape[1])
         
-
-   
         # compute the overlap between the patch and the mask using a sliding window approach  
         stride = self.patch_size  
         window_shape = (int(self.patch_size/ratio), int(self.patch_size/ratio))

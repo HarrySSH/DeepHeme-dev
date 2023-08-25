@@ -60,11 +60,7 @@ cell_types_df = cell_types_df.join(enc_df)
 
 image_names  = [x.split('/')[-1] for x in glob.glob(args.patch_repo_dir+'/*')] #
 #len(image_names)
-x_list = []
-y_list = []
-for _names in image_names:
-    x_list.append(int(int(_names.split('_')[1])/512))
-    y_list.append(int(int(_names.split('_')[2].split('.')[0])/512))
+
     
 resnext50_pretrained = torch.hub.load('pytorch/vision:v0.10.0', 'resnext50_32x4d')
 My_model = Myresnext50(my_pretrained_model= resnext50_pretrained, num_classes = 3)
