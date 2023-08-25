@@ -8,7 +8,7 @@ import sys
 import os
 from typing import Dict
 
-
+sys.path.append('../MarrowScope/HemeFind_scripts/')
 from models.models import Myresnext50
 #from  import Myresnext50
 from train.train_classification import trainer_classification
