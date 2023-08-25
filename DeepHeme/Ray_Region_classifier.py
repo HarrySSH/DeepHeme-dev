@@ -137,6 +137,9 @@ result_dir = f"{args.patch_repo_dir.split('/patches/')[0]}/results/{args.patch_r
 if not os.path.exists(result_dir):
     os.mkdir(result_dir)
 
+predictions.drop_columns(["original_image"])
+print('Saving results')
+
 predictions.drop_columns(["original_image"]).write_parquet(f"{result_dir}predictions.parquet")
 ### also drop the column when the images is not predicted as adequate
 predictions[predictions["predicted_label"] != "adequate"].drop_columns(["original_image"]).write_parquet(f"{result_dir}predictions_no_adequate.parquet")
