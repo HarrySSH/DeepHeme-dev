@@ -87,7 +87,7 @@ checkpoint  = remove_data_parallel(checkpoint['model_state_dict'])
 My_model.load_state_dict(checkpoint)
 
 ds = ray.data.read_images(args.patch_repo_dir,
-                          mode="RGB")
+                          mode="RGB", include_paths=True)
 
 class ResnextModel:
     def __init__(self):
@@ -150,6 +150,10 @@ if not os.path.exists(result_dir):
     os.mkdir(result_dir)
 
 predictions.drop_columns(["original_image"]).write_parquet(f"{result_dir}predictions.parquet")
+### also drop the column when the images is not predicted as adequate
+predictions[predictions["predicted_label"] != "adequate"].drop_columns(["original_image"]).write_parquet(f"{result_dir}predictions_no_adequate.parquet")
+
+
 print(f"Predictions saved to {result_dir}predictions.parquet")
 
 print('Finished computing the prob logits for the region quality')
