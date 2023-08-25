@@ -79,7 +79,7 @@ def remove_data_parallel(old_state_dict):
     
     return new_state_dict
 
-checkpoint_PATH = '../HemeFind/HemeFind_scripts/checkpoints/checkpoint_best_iteration3.ckpt'
+checkpoint_PATH = '../MarrowScope/HemeFind_scripts/checkpoints/checkpoint_best_iteration3.ckpt'
 checkpoint = torch.load(checkpoint_PATH)
 checkpoint  = remove_data_parallel(checkpoint['model_state_dict'])
 
