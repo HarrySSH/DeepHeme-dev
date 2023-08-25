@@ -86,7 +86,7 @@ class ResnextModel:
         self.weights = checkpoint
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-        self.model = Myresnext50(my_pretrained_model= resnext50_pretrained, num_classes = 3)(weights=self.weights).to(self.device)
+        self.model = Myresnext50(my_pretrained_model= resnext50_pretrained, num_classes = 3).load_state_dict(self.weights).to(self.device)
         self.model.eval()
 
     def __call__(self, batch: Dict[str, np.ndarray]):
