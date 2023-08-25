@@ -1,8 +1,7 @@
 from setuptools import setup, find_packages  
   
 setup(  
-    name="marrowscope",  
+    name="my_project",  
     version="0.1.0",  
-    packages=find_packages(),  
+    packages=find_packages(include=["MarrowScope*"]),  
 )  
-
