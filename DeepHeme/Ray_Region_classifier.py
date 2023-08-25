@@ -28,6 +28,16 @@ import pyarrow.parquet as pq
 
 ### We want to use Ray library for multi-processing and distributed computing
 import ray
+
+ray.init(  
+    runtime_env={  
+        "working_dir": ".",  # This should be the root directory of your project  
+        "pip": ["../MarrowScope/dist/marrowscope-0.1.0-py3-none-any.whl"],  # Additional packages to install
+    }  
+) 
+
+print('Why is this not working?')
+
 from ray.train.torch import TorchPredictor
 
 import numpy as np
