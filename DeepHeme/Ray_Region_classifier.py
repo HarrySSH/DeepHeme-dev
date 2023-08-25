@@ -48,18 +48,6 @@ parser.add_argument('--batch_size', default=32, type=bool,
 
 args = parser.parse_args()
 
-cell_types = ['adequate','blood','clot']
-
-cell_types_df = pd.DataFrame(cell_types, columns=['Types'])# converting type of columns to 'category'
-cell_types_df['Types'] = cell_types_df['Types'].astype('category')# Assigning numerical values and storing in another column
-cell_types_df['Types_Cat'] = cell_types_df['Types'].cat.codes
-
-enc = OneHotEncoder(handle_unknown='ignore')# passing bridge-types-cat column (label encoded values of bridge_types)
-enc_df = pd.DataFrame(enc.fit_transform(cell_types_df[['Types_Cat']]).toarray())# merge with main df bridge_df on key values
-cell_types_df = cell_types_df.join(enc_df)
-
-image_names  = [x.split('/')[-1] for x in glob.glob(args.patch_repo_dir+'/*')] #
-#len(image_names)
 
     
 resnext50_pretrained = torch.hub.load('pytorch/vision:v0.10.0', 'resnext50_32x4d')
@@ -141,7 +129,7 @@ predictions = transformed_ds.map_batches(
     num_gpus=1,  # Specify 1 GPU per model replica.
     batch_size=256,  # Use the largest batch size that can fit on our GPUs
 )
-
+print('Finished computing the prob logits for the region quality')
 if os.path.exists(f"{args.patch_repo_dir.split('/patches/')[0]}/results/") == False:
     os.mkdir(f"{args.patch_repo_dir.split('/patches/')[0]}/results/")
 
