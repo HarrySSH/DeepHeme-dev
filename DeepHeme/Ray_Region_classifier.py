@@ -21,6 +21,7 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from torch.utils import data
 from torchvision import transforms
+from torchvision import models
 
 import pyarrow.parquet as pq 
 
@@ -129,7 +130,7 @@ predictions = transformed_ds.map_batches(
         size=3
     ),  # Use 3 GPUs. Change this number based on the number of GPUs in your cluster.
     num_gpus=1,  # Specify 1 GPU per model replica.
-    batch_size=256,  # Use the largest batch size that can fit on our GPUs
+    batch_size=0,  # Use the largest batch size that can fit on our GPUs
 )
 print('Finished computing the prob logits for the region quality')
 if os.path.exists(f"{args.patch_repo_dir.split('/patches/')[0]}/results/") == False:
