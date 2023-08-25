@@ -54,7 +54,7 @@ args = parser.parse_args()
 
     
 resnext50_pretrained = torch.hub.load('pytorch/vision:v0.10.0', 'resnext50_32x4d')
-My_model = Myresnext50(my_pretrained_model= resnext50_pretrained, num_classes = 3)
+#My_model = Myresnext50(my_pretrained_model= resnext50_pretrained, num_classes = 3)
 
 
 
@@ -83,9 +83,10 @@ ds = ray.data.read_images(args.patch_repo_dir,
 class ResnextModel:
     def __init__(self):
         self.labels = ["adequate", "blood", "clot"]
+        self.weights = checkpoint
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-        self.model = My_model
+        self.model = Myresnext50(my_pretrained_model= resnext50_pretrained, num_classes = 3)(weights=self.weights).to(self.device)
         self.model.eval()
 
     def __call__(self, batch: Dict[str, np.ndarray]):
@@ -101,7 +102,8 @@ class ResnextModel:
             return {
                 "predicted_label": predicted_labels,
                 "original_image": batch["original_image"],
-                "predicted_prob": prediction.detach().cpu().numpy()
+                "predicted_prob": prediction.detach().cpu().numpy(),
+                "path": batch["path"],
             }
         
  
