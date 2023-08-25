@@ -142,8 +142,15 @@ predictions = transformed_ds.map_batches(
     batch_size=256,  # Use the largest batch size that can fit on our GPUs
 )
 
-predictions.drop_columns(["original_image"]).write_parquet(f"{args.save_destination}/predictions.parquet")
-print(f"Predictions saved to {args.save_destination}/predictions.parquet")
+if os.path.exists(f"{args.patch_repo_dir.split('/patches/')[0]}/results/") == False:
+    os.mkdir(f"{args.patch_repo_dir.split('/patches/')[0]}/results/")
+
+result_dir = f"{args.patch_repo_dir.split('/patches/')[0]}/results/{args.patch_repo_dir.split('/patches/')[1].split('patches')[0]}slide_res/"
+if not os.path.exists(result_dir):
+    os.mkdir(result_dir)
+
+predictions.drop_columns(["original_image"]).write_parquet(f"{result_dir}predictions.parquet")
+print(f"Predictions saved to {result_dir}predictions.parquet")
 
 print('Finished computing the prob logits for the region quality')
  
