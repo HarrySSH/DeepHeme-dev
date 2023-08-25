@@ -140,9 +140,9 @@ if not os.path.exists(result_dir):
 predictions.drop_columns(["original_image"])
 print('Saving results')
 
-predictions.drop_columns(["original_image"]).write_parquet(f"{result_dir}predictions.parquet")
+#predictions.drop_columns(["original_image"]).write_parquet(f"{result_dir}predictions.parquet")
 ### also drop the column when the images is not predicted as adequate
-predictions[predictions["predicted_label"] != "adequate"].drop_columns(["original_image"]).write_parquet(f"{result_dir}predictions_no_adequate.parquet")
+#predictions[predictions["predicted_label"] != "adequate"].drop_columns(["original_image"]).write_parquet(f"{result_dir}predictions_no_adequate.parquet")
 
 
 print(f"Predictions saved to {result_dir}predictions.parquet")
