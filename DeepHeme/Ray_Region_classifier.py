@@ -9,7 +9,7 @@ import os
 from typing import Dict
 
 sys.path.append('../MarrowScope/HemeFind_scripts/')
-#from models.models import Myresnext50
+from models.models import Myresnext50
 from train.train_classification import trainer_classification
 from utils.utils import configure_optimizers
 from Datasets.DataLoader import Img_DataLoader
@@ -23,14 +23,6 @@ from torch.utils import data
 from torchvision import transforms
 
 import pyarrow.parquet as pq 
-
-
-from ray.util.importer import import_local_module  
-  
-# Import the models module  
-local_path_to_models = '../MarrowScope/HemeFind_scripts/models/models.py'  
-models_module = import_local_module(local_path_to_models) 
-
 
 
 ### We want to use Ray library for multi-processing and distributed computing
@@ -61,7 +53,8 @@ args = parser.parse_args()
 
     
 resnext50_pretrained = torch.hub.load('pytorch/vision:v0.10.0', 'resnext50_32x4d')
-My_model = models_module.Myresnext50(my_pretrained_model= resnext50_pretrained, num_classes=3) 
+My_model = Myresnext50(my_pretrained_model= resnext50_pretrained, num_classes = 3)
+
 
 
 from collections import OrderedDict
@@ -91,7 +84,7 @@ class ResnextModel:
         self.labels = ["adequate", "blood", "clot"]
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-        self.model = My_model.to(self.device)
+        self.model = My_model
         self.model.eval()
 
     def __call__(self, batch: Dict[str, np.ndarray]):
