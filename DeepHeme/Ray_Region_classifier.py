@@ -75,7 +75,7 @@ checkpoint = torch.load(checkpoint_PATH)
 checkpoint  = remove_data_parallel(checkpoint['model_state_dict'])
 
 ### load checkpoints
-My_model.load_state_dict(checkpoint)
+#My_model.load_state_dict(checkpoint)
 
 ds = ray.data.read_images(args.patch_repo_dir,
                           mode="RGB", include_paths=True)
