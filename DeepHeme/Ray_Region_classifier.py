@@ -21,7 +21,6 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from torch.utils import data
 from torchvision import transforms
-from torchvision import models
 
 import pyarrow.parquet as pq 
 
@@ -54,7 +53,7 @@ args = parser.parse_args()
 
     
 resnext50_pretrained = torch.hub.load('pytorch/vision:v0.10.0', 'resnext50_32x4d')
-#My_model = Myresnext50(my_pretrained_model= resnext50_pretrained, num_classes = 3)
+My_model = Myresnext50(my_pretrained_model= resnext50_pretrained, num_classes = 3)
 
 
 
@@ -75,7 +74,7 @@ checkpoint = torch.load(checkpoint_PATH)
 checkpoint  = remove_data_parallel(checkpoint['model_state_dict'])
 
 ### load checkpoints
-#My_model.load_state_dict(checkpoint)
+My_model.load_state_dict(checkpoint)
 
 ds = ray.data.read_images(args.patch_repo_dir,
                           mode="RGB", include_paths=True)
@@ -83,10 +82,9 @@ ds = ray.data.read_images(args.patch_repo_dir,
 class ResnextModel:
     def __init__(self):
         self.labels = ["adequate", "blood", "clot"]
-        self.weights = checkpoint
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-        self.model = Myresnext50(my_pretrained_model= resnext50_pretrained, num_classes = 3).load_state_dict(self.weights).to(self.device)
+        self.model = My_model.to(self.device)
         self.model.eval()
 
     def __call__(self, batch: Dict[str, np.ndarray]):
@@ -102,8 +100,7 @@ class ResnextModel:
             return {
                 "predicted_label": predicted_labels,
                 "original_image": batch["original_image"],
-                "predicted_prob": prediction.detach().cpu().numpy(),
-                "path": batch["path"],
+                "predicted_prob": prediction.detach().cpu().numpy()
             }
         
  
