@@ -31,7 +31,7 @@ import ray
 
 ray.init(  
     runtime_env={  
-        "working_dir": ".",  # This should be the root directory of your project  
+        "working_dir": "/home/harry/Documents/DeepHeme-dev",  # This should be the root directory of your project  
         "pip": ["./packages/marrowscope-0.1.0-py3-none-any.whl"],  # Additional packages to install
     }  
 ) 
