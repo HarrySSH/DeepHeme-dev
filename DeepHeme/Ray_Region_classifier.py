@@ -8,9 +8,9 @@ import sys
 import os
 from typing import Dict
 
-sys.path.append('../MarrowScope/HemeFind_scripts/')
-#from models.models import Myresnext50
-from wtf.wtf import Myresnext50
+
+from models.models import Myresnext50
+#from  import Myresnext50
 from train.train_classification import trainer_classification
 from utils.utils import configure_optimizers
 from Datasets.DataLoader import Img_DataLoader
@@ -32,7 +32,7 @@ import ray
 ray.init(  
     runtime_env={  
         "working_dir": ".",  # This should be the root directory of your project  
-        "pip": ["/home/harry/Documents/DeepHeme-dev/MarrowScope/packages/marrowscope-0.1.0-py3-none-any.whl"],  # Additional packages to install
+        "pip": ["./packages/marrowscope-0.1.0-py3-none-any.whl"],  # Additional packages to install
     }  
 ) 
 
