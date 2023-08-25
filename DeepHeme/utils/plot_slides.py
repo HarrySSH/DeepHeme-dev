@@ -5,7 +5,7 @@ import openslide
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 def visualize_whole_slide_using_open_slide(image_dir = None,
-                         level = 0, return_image = False, show = True):
+                         level = 7, return_image = False, show = True):
     ### Visualize whole slide image
     '''
     image_dir: path to whole slide image
