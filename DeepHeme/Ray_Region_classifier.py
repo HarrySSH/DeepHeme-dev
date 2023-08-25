@@ -22,6 +22,8 @@ from torch.utils.data import DataLoader
 from torch.utils import data
 from torchvision import transforms
 
+import pyarrow.parquet as pq 
+
 
 ### We want to use Ray library for multi-processing and distributed computing
 import ray
@@ -139,7 +141,7 @@ if not os.path.exists(result_dir):
 
 predictions.drop_columns(["original_image"])
 print('Saving results')
-
+pq.write_table(predictions, f"{result_dir}predictions.parquet")
 #predictions.drop_columns(["original_image"]).write_parquet(f"{result_dir}predictions.parquet")
 ### also drop the column when the images is not predicted as adequate
 #predictions[predictions["predicted_label"] != "adequate"].drop_columns(["original_image"]).write_parquet(f"{result_dir}predictions_no_adequate.parquet")
@@ -148,4 +150,7 @@ print('Saving results')
 print(f"Predictions saved to {result_dir}predictions.parquet")
 
 print('Finished computing the prob logits for the region quality')
+print('SHUTTING DOWN RAY')
+
+ray.shutdown()
  
