@@ -31,7 +31,7 @@ class DeepHeme():
         if not os.path.exists(self.wsi_dir.split('slides')[0] + 'patches'):
             os.mkdir(self.wsi_dir.split('slides')[0] + 'patches')
 
-        self.patch_repo_dir = self.wsi_dir.split('slides')[0] + 'patches' + self.wsi_name.split('.ndpi')[0] + 'patches'
+        self.patch_repo_dir = self.wsi_dir.split('slides')[0] + 'patches/' + self.wsi_name.split('.ndpi')[0] + 'patches'
         if not os.path.exists(self.patch_repo_dir):
             os.mkdir(self.patch_repo_dir)
         self.registered = True
