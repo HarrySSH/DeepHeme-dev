@@ -122,7 +122,10 @@ class ResnextModel:
         # Move the tensor batch to GPU if available.
         torch_batch = torch.from_numpy(batch["transformed_image"]).to(self.device)
         with torch.inference_mode():
+
             prediction = self.model(torch_batch)
+            print(prediction.shape)
+            print('.......')
             predicted_classes = prediction.argmax(dim=0).detach().cpu()
             
             return {
