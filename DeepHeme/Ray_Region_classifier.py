@@ -130,7 +130,8 @@ class ResnextModel:
             return {
                 "predicted_label": predicted_classes,
                 "original_image": batch["original_image"],
-                "predicted_prob": prediction.detach().cpu().numpy()
+                "predicted_prob": prediction.detach().cpu().numpy(),
+                'path': batch['path'],
             }
         
  
@@ -178,6 +179,7 @@ for batch in predictions.iter_batches(batch_format="pandas"):
     dfs.append(batch)  
   
 result_df = pd.concat(dfs, axis=0, ignore_index=True)  
+del result_df["original_image"]
 ### save the results
 result_df.to_csv(f"{result_dir}predictions.tsv", sep='\t', index=False)
 #predictions.drop_columns(["original_image"]).write_parquet(f"{result_dir}predictions.parquet")
