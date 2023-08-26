@@ -190,10 +190,10 @@ import re
   
 def string_to_list(string):  
     # Remove outer double quotes if present  
-    string = string.strip('"')  
+    string = str(string).strip('"')  
   
     # Remove the outer square brackets and split the string by spaces  
-    string = string[1:-1].split() [:3]
+    string = string[1:-1].split()[:3]
 
   
     # Extract the numbers from the string using regular expressions  
