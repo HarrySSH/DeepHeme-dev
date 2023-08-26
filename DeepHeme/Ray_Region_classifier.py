@@ -9,7 +9,23 @@ import os
 from typing import Dict
 
 sys.path.append('../MarrowScope/HemeFind_scripts/')
-from models.models import Myresnext50
+
+class Myresnext50(nn.Module):
+    def __init__(self, my_pretrained_model, num_classes = 3):
+        super(Myresnext50, self).__init__()
+        self.pretrained = my_pretrained_model
+        self.my_new_layers = nn.Sequential(nn.Linear(1000, 100),
+                                           nn.ReLU(),
+                                           nn.Linear(100, num_classes))
+        self.num_classes = num_classes
+    
+    def forward(self, x):
+        x = self.pretrained(x)
+        x = self.my_new_layers(x)
+        
+        pred = torch.sigmoid(x.reshape(x.shape[0], 1,self.num_classes))
+        return pred
+    
 #from  import Myresnext50
 from train.train_classification import trainer_classification
 from utils.utils import configure_optimizers
