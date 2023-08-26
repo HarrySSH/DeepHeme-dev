@@ -90,6 +90,13 @@ class DeepHeme():
     def ready(self):
         ### check if the registration is done
         return self.registered
+    
+    def deactive(self):
+        ### deactive the registration
+        self.registered = False
+        self.wsi_dir = None
+        self.wsi_name = None
+        self.patch_repo_dir = None
 
     def run(self):
         assert self.ready(), "Please register the patch repo directory first"
