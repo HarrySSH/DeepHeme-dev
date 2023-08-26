@@ -73,20 +73,16 @@ def main(args):
     ID = result_dir.split('results')[1].split('/')[-2].split('slide_res')[0]
     print('Loading the quality score from previous results')
     try:
-        df_res = pd.read_csv(f"{result_dir}{ID}.csv", index_col = 0)
+        df_res = pd.read_csv(f"{result_dir}predictions.tsv", index_col = 0)
     except:
         raise TypeError("The file is not loaded correctly")
-    df_res = df_res.sort_values(['adequate'], ascending=False)
+    df_res = df_res.sort_values(['adequate_prob'], ascending=False)
     df_res.index = list(range(df_res.shape[0]))
     
-    good_regions=df_res[df_res['adequate']>args.image_quality_score]
+    good_regions=df_res[df_res['adequate_prob']>args.image_quality_score]
     if good_regions.shape[0]>args.max_patch_number:
         print(f'There are many good regions, we subset {args.max_patch_number} regions with the best confidence. For quality and speed')
         good_regions = good_regions.head(args.max_patch_number)
-        
-    
-    
-    
     
     
     p = 0
