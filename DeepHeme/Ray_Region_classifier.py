@@ -122,11 +122,9 @@ class ResnextModel:
         with torch.inference_mode():
             prediction = self.model(torch_batch)
             predicted_classes = prediction.argmax(dim=1).detach().cpu()
-            predicted_labels = [
-                self.labels[i] for i in predicted_classes
-            ]
+            
             return {
-                "predicted_label": predicted_labels,
+                "predicted_label": predicted_classes,
                 "original_image": batch["original_image"],
                 "predicted_prob": prediction.detach().cpu().numpy()
             }
