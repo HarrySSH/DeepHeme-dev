@@ -73,7 +73,7 @@ def main(args):
     ID = result_dir.split('results')[1].split('/')[-2].split('slide_res')[0]
     print('Loading the quality score from previous results')
     try:
-        df_res = pd.read_csv(f"{result_dir}predictions.tsv", index_col = 0)
+        df_res = pd.read_csv(f"{result_dir}predictions.tsv", sep='\t', index_col = 0)
     except:
         raise TypeError("The file is not loaded correctly")
     df_res = df_res.sort_values(['adequate_prob'], ascending=False)
