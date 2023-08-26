@@ -121,7 +121,7 @@ class ResnextModel:
         torch_batch = torch.from_numpy(batch["transformed_image"]).to(self.device)
         with torch.inference_mode():
             prediction = self.model(torch_batch)
-            predicted_classes = prediction.argmax(dim=1).detach().cpu()
+            predicted_classes = prediction.argmax(dim=0).detach().cpu()
             
             return {
                 "predicted_label": predicted_classes,
