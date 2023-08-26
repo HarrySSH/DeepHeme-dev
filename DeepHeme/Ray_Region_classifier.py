@@ -9,6 +9,7 @@ import os
 from typing import Dict
 import torch
 import torch.nn as nn
+import time
 sys.path.append('../MarrowScope/HemeFind_scripts/')
 
 class Myresnext50(nn.Module):
@@ -60,7 +61,8 @@ from ray.train.torch import TorchPredictor
 import numpy as np
 parser = argparse.ArgumentParser()
 
-
+### calculate the duration of the whole process
+start_time = time.time()
 #########################################################
 
 parser.add_argument('--patch_repo_dir', type=str,
@@ -187,4 +189,8 @@ print('Finished computing the prob logits for the region quality')
 print('SHUTTING DOWN RAY')
 
 ray.shutdown()
+
+### calculate the duration of the whole process
+end_time = time.time()
+print('The total time for computing the region quality is {} seconds'.format(end_time - start_time))
  
