@@ -10,6 +10,7 @@ from typing import Dict
 import torch
 import torch.nn as nn
 import time
+import re
 sys.path.append('../MarrowScope/HemeFind_scripts/')
 
 class Myresnext50(nn.Module):
@@ -180,8 +181,41 @@ for batch in predictions.iter_batches(batch_format="pandas"):
   
 result_df = pd.concat(dfs, axis=0, ignore_index=True)  
 del result_df["original_image"]
+
+result_df['predicted_label'] = result_df['predicted_label'].str[1]
+
+### convert the prob logits to prob for each class format as string "[[0.5880363  0.39977467 0.02685326]]"
+### first remove the quotes ""
+import re  
+  
+def string_to_list(string):  
+    # Remove outer double quotes if present  
+    string = string.strip('"')  
+  
+    # Remove the outer square brackets and split the string by spaces  
+    string = string[1:-1].split() [:3]
+
+  
+    # Extract the numbers from the string using regular expressions  
+    numbers = [float(re.findall(r'\d+\.\d+', num)[0]) for num in string]  
+    
+  
+    return [numbers]
+
+prob_list = []
+for x in result_df['predicted_prob'].tolist():
+    prob_list.append(string_to_list(x)[0])
+
+
+result_df['predicted_prob'] = prob_list
+
+result_df['adequate_prob'] = [x[0] for x in result_df['predicted_prob']]
+result_df['blood_prob'] = [x[1] for x in result_df['predicted_prob']]
+result_df['clot_prob'] = [x[2] for x in result_df['predicted_prob']]
 ### save the results
 result_df.to_csv(f"{result_dir}predictions.tsv", sep='\t', index=False)
+
+
 #predictions.drop_columns(["original_image"]).write_parquet(f"{result_dir}predictions.parquet")
 ### also drop the column when the images is not predicted as adequate
 #predictions[predictions["predicted_label"] != "adequate"].drop_columns(["original_image"]).write_parquet(f"{result_dir}predictions_no_adequate.parquet")
