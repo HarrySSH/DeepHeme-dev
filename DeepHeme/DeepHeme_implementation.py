@@ -49,14 +49,20 @@ class DeepHeme():
         
         os.system("python patch_and_mask.py --wsi_dir {} --wsi_name {} ".format(self.wsi_dir, self.wsi_name))
     
-    def patch_classifier(self):
+    def patch_classifier(self, ray = True):
         ### This is the function to call the patch classifier
         ### This is the command line: python Region_classifier.py --patch_repo_dir /media/hdd3/harry/Slides_repo/Plasma_cel_myeloma/patches/H18-2459_S10_MSKC_2023-05-31_16.29.27patches --save_vis False
-        start_time = time.time()
         print("Start patch classification")
-        os.system("python Region_classifier.py --patch_repo_dir {} --save_vis False".format(self.patch_repo_dir))
+        start_time = time.time()
+        if ray:
+            os.system("python Ray_Region_classifier.py --patch_repo_dir {} ".format(self.patch_repo_dir))
+        else:
+            print('Using the non ray version')
+            os.system("python Region_classifier.py --patch_repo_dir {} --save_vis False".format(self.patch_repo_dir))
         print("Patch classification finished")
         print("Time cost: {} seconds".format(time.time() - start_time))
+
+
     
     def cell_detector(self):
         ### This is the function to call the cell detector

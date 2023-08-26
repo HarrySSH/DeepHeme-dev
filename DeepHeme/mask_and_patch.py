@@ -146,7 +146,7 @@ class patching_based_on_mask():
 # main function
 if __name__ == '__main__':
 
-    glob.glob('')
+    #glob.glob('')
     ### use openslide to read the high resolution image
 
     # add args.slide_dir as input
