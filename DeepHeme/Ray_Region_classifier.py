@@ -182,7 +182,7 @@ for batch in predictions.iter_batches(batch_format="pandas"):
 result_df = pd.concat(dfs, axis=0, ignore_index=True)  
 del result_df["original_image"]
 
-result_df['predicted_label'] = result_df['predicted_label'].str[1]
+result_df['predicted_label'] = [x[0] for x in result_df['predicted_label'].tolist()]
 
 ### convert the prob logits to prob for each class format as string "[[0.5880363  0.39977467 0.02685326]]"
 ### first remove the quotes ""
