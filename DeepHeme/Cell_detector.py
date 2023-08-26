@@ -94,11 +94,10 @@ def main(args):
         if not os.path.exists(savedir):
             os.mkdir(savedir)
     
-    for index, (x,y) in tqdm(enumerate(zip(good_regions['x'].tolist(), 
-                     good_regions['y'].tolist()))):
+    for index, path in tqdm(good_regions['path'].tolist()):
 
         
-        image = cv2.imread(f'{args.patch_repo_dir}/patch_{x*512}_{y*512}.png')
+        image = cv2.imread(path)
         #image = cv2.imread(_dir)
         # Convert OpenCV bgr to rgb
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -106,7 +105,7 @@ def main(args):
         
         boxes = detect.detect_image(model, image, conf_thres=0.1, nms_thres=0.1)
         
-        patchID = f"patch_{x*512}_{y*512}"
+        patchID = path.split('/')[-1].split('.png')[0]
         
         extract_cell_patches(boxes, savedir,patchID, image)
         
