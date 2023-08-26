@@ -124,9 +124,8 @@ class ResnextModel:
         with torch.inference_mode():
 
             prediction = self.model(torch_batch)
-            print(prediction.shape)
-            print('.......')
-            predicted_classes = prediction.argmax(dim=0).detach().cpu()
+
+            predicted_classes = prediction.argmax(dim=2).detach().cpu()
             
             return {
                 "predicted_label": predicted_classes,
