@@ -7,7 +7,8 @@ import torch
 import sys
 import os
 from typing import Dict
-
+import torch
+import torch.nn as nn
 sys.path.append('../MarrowScope/HemeFind_scripts/')
 
 class Myresnext50(nn.Module):
