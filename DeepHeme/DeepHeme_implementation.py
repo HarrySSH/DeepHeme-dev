@@ -47,7 +47,10 @@ class DeepHeme():
         start_time = time.time()
         print("Start patching")
         
-        os.system("python patch_and_mask.py --wsi_dir {} --wsi_name {} ".format(self.wsi_dir, self.wsi_name))
+        os.system("python mask_and_patch.py --wsi_dir {} --wsi_name {} ".format(self.wsi_dir, self.wsi_name))
+        end_time = time.time()
+        print("Patching finished")
+        print("Time cost: {} seconds".format(end_time - start_time))
     
     def patch_classifier(self, ray = True):
         ### This is the function to call the patch classifier
