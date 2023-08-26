@@ -112,7 +112,7 @@ class ResnextModel:
         self.labels = ["adequate", "blood", "clot"]
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-        self.model = My_model
+        self.model = My_model.to(self.device)
         self.model.eval()
 
     def __call__(self, batch: Dict[str, np.ndarray]):
