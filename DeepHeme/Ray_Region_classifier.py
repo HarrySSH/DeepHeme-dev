@@ -55,7 +55,6 @@ ray.init(
     }  
 ) 
 
-print('Why is this not working?')
 
 from ray.train.torch import TorchPredictor
 
