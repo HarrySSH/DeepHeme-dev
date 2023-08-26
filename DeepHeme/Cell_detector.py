@@ -94,7 +94,7 @@ def main(args):
         if not os.path.exists(savedir):
             os.mkdir(savedir)
     
-    for index, path in tqdm(good_regions['path'].tolist()):
+    for  path in tqdm(good_regions['path'].tolist()):
 
         
         image = cv2.imread(path)
