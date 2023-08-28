@@ -191,7 +191,7 @@ def main(args):
     My_model = My_model.cuda().eval()
     Orig_img = Img_DataLoader(img_list=Image_dirs, split='viz', df=cell_types_df, transform=transform_pipeline)
     shuffle = False
-    dataloader = DataLoader(Orig_img, batch_size=32, num_workers=2, shuffle=shuffle)
+    dataloader = DataLoader(Orig_img, batch_size=1024, num_workers=2, shuffle=shuffle)
     if args.return_detailed_results:
         assert args.save_detailed_table_dir is not None, "Please provide the save_detailed_table_dir"
         labels_numeric, df_result = predition(model=My_model,
@@ -230,12 +230,11 @@ def main(args):
 main(args)
 
     
-    
-### save a list as a table 
-# df = pd.DataFrame()
-# df['dir'] = Image_dirs
-### save without the column names
-# df.to_csv(f"{result_dir}predictions.tsv", sep='\t', index=False, header=False)
+### some exmaple on how to use the cell classifier
+# python Cell_classifier.py --patch_repo_dir /media/hdd4/harry/Slides_repo/AML/slides/AML_2019_07_01_1/patches/ /AML/slides/AML_2019_07_01_1/patches/AML_2019_07_01_1.tsv  --sort_cells True
+# python Cell_classifier.py --cell_repo_dir /media/hdd4/harry/Slides_repo/AML/slides/AML_2019_07_01_1/patches/extracted_cells/ --sort_cells True
+# python Cell_classifier.py --cell_dirs_list /media/hdd4/harry/Slides_repo/AML/slides/AML_2019_07_01_1/patches/AML_2019_07_01_1.tsv --return_detailed_results True --save_detailed_table_dir /media/hdd4/harry/Slides_repo/AML/slides/AML_2019_07_01_1/patches/AML_2019_07_01_1.tsv 
+
 
     
     
