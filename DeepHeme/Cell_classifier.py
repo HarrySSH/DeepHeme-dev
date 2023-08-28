@@ -121,7 +121,9 @@ def predition(model, test_lists, df, transform, dataloader, return_detailed_resu
     :return: the lists of labels
 
     """
-    for i, _batch in enumerate(dataloader):
+    ### make the progress bar with tqdm 
+
+    for i, _batch in enumerate(tqdm(dataloader)):
 
         if i == 0:
 
@@ -229,7 +231,12 @@ main(args)
 
     
     
-    
+### save a list as a table 
+# df = pd.DataFrame()
+# df['dir'] = Image_dirs
+### save without the column names
+# df.to_csv(f"{result_dir}predictions.tsv", sep='\t', index=False, header=False)
+
     
     
     
