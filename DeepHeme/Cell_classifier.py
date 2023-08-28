@@ -56,6 +56,13 @@ parser.add_argument('--patch_repo_dir', type=str, default= None,
 
 parser.add_argument('--cell_repo_dir', type=str, default= None, 
                     help='Directory in which the cropped cells are stored, in the case when you just want to make the model work directly on the cell crops')
+
+parser.add_argument('--cell_dirs_list', type=str, default= None,)
+
+parser.add_argument('--save_detailed_table_dir', type=str, default= None,)
+
+parser.add_argument('--return_detailed_results', type=str, default= False,)
+parser.add_argument('--sort_cells', type=str, default= False,)
 args = parser.parse_args()
 def model_create(num_classes = 23, path = 'not_existed_path'):
 
@@ -104,7 +111,7 @@ def df_create():
     cell_types_df = cell_types_df.join(enc_df)
     return cell_types_df, cell_types
 
-def predition(model, test_lists, df, transform, dataloader):
+def predition(model, test_lists, df, transform, dataloader, return_detailed_results):
     """
     :param model: deep learning model
     :param test_lists: a list of image patches
@@ -130,7 +137,22 @@ def predition(model, test_lists, df, transform, dataloader):
             _pred_prob = torch.flatten(_pred_prob, start_dim=1).detach().cpu().numpy()
             pred_prob = np.concatenate((pred_prob, _pred_prob))
     label = np.argmax(pred_prob, axis = 1)
-    return list(label)
+
+    if return_detailed_results:
+        df_result = pd.DataFrame()
+        df_result['dir'] = test_lists
+        df_result['celltype'] = label
+        cell_types = ['B1','B2', 'E1', 'E4', 'ER1','ER2','ER3','ER4','ER5','ER6',
+                     'L2','L4', 'M1', 'M2', 'M3', 'M4', 'M5', 'M6',
+                     'MO2','PL2','PL3','U1','U4']
+        
+        ### add 23 columns and get the probability for each cell type
+        for i in range(23):
+            df_result[cell_types[i]] = pred_prob[:,i]
+        df_result.to_csv(args.return_detailed_results, sep='\t')
+        return list(label), df_result
+    else:
+        return list(label)
 
 def main(args):
     if args.patch_repo_dir is not None:
@@ -144,6 +166,17 @@ def main(args):
         celldir = args.cell_repo_dir
         
         Image_dirs = glob.glob(celldir+'/*')
+    ### alternatively, we could use the cell crops list directly
+    elif args.cell_dirs_list is not None:
+        celldir = args.cell_dirs_list
+        try:
+            # convert the first column to list
+            Image_dirs = pd.read_csv(celldir, sep='\t', header=None)[0].tolist()
+        except:
+            raise TypeError("The file is not loaded correctly")
+        
+
+
     else:
         print("Please provide the patch_repo_dir or cell_repo_dir")
         sys.exit()
@@ -157,7 +190,16 @@ def main(args):
     Orig_img = Img_DataLoader(img_list=Image_dirs, split='viz', df=cell_types_df, transform=transform_pipeline)
     shuffle = False
     dataloader = DataLoader(Orig_img, batch_size=32, num_workers=2, shuffle=shuffle)
-    labels_numeric = predition(model=My_model,
+    if args.return_detailed_results:
+        assert args.save_detailed_table_dir is not None, "Please provide the save_detailed_table_dir"
+        labels_numeric, df_result = predition(model=My_model,
+                      test_lists=Image_dirs,
+                      df=cell_types_df,
+                      transform=transform_pipeline,
+                      dataloader=dataloader,
+                      return_detailed_results = args.return_detailed_results)
+    else:
+        labels_numeric = predition(model=My_model,
                       test_lists=Image_dirs,
                       df=cell_types_df,
                       transform=transform_pipeline,
@@ -170,10 +212,18 @@ def main(args):
     df['dir'] = Image_dirs
     df['celltype'] = labels
     print('Done with prediction')
-    print("Let's sort them into the different folders")
+
+    ### save the detailed table
+    if args.save_detailed_table_dir is not None:
+        df_result.to_csv(args.save_detailed_table_dir, sep='\t')
+    else:
+        print("Please provide the save_detailed_table_dir")
+        sys.exit()
     
-    sorting_cells(df_result = df, img_dir= celldir)
-    print('I need an assertation statetment to make this really correct!')
+    
+    if args.sort_cells:
+        print("Let's sort them into the different folders")
+        sorting_cells(df_result = df, img_dir= celldir)
 
 main(args)
 
