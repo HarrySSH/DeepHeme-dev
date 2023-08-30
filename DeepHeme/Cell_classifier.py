@@ -230,13 +230,5 @@ def main(args):
 main(args)
 
     
-### some exmaple on how to use the cell classifier
-# python Cell_classifier.py --patch_repo_dir /media/hdd4/harry/Slides_repo/AML/slides/AML_2019_07_01_1/patches/ /AML/slides/AML_2019_07_01_1/patches/AML_2019_07_01_1.tsv  --sort_cells True
-# python Cell_classifier.py --cell_repo_dir /media/hdd4/harry/Slides_repo/AML/slides/AML_2019_07_01_1/patches/extracted_cells/ --sort_cells True
-# python Cell_classifier.py --cell_dirs_list /media/hdd4/harry/Slides_repo/AML/slides/AML_2019_07_01_1/patches/AML_2019_07_01_1.tsv --return_detailed_results True --save_detailed_table_dir /media/hdd4/harry/Slides_repo/AML/slides/AML_2019_07_01_1/patches/AML_2019_07_01_1.tsv 
 
 
-    
-    
-    
-    
