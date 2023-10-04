@@ -7,6 +7,7 @@ def multiprocessing():
 The cell classifier model could get the 
 '''
 import sys
+from DataLoader import Img_DataLoader
 sys.path.append('../HemeYolo/')
 import torch
 import torch.nn as nn
@@ -31,7 +32,7 @@ import argparse
 
 
 import albumentations
-from Classification.DataLoader import Img_DataLoader
+
 from Classification.ResNext50 import Myresnext50
 
 
