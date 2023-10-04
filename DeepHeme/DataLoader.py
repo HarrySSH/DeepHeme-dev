@@ -33,6 +33,7 @@ class Img_DataLoader(data.Dataset):
         sample = dict()
         img_path = self.file_paths[index]
         # prepare image
+        print(img_path)
         orig_img = cv2.imread(img_path)
         print(orig_img.shape)
         image = cv2.cvtColor(orig_img, cv2.COLOR_BGR2RGB)
