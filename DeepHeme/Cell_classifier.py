@@ -206,7 +206,7 @@ def main(args):
                       df=cell_types_df,
                       transform=transform_pipeline,
                       dataloader=dataloader,
-                      args.return_detailed_results)
+                      return_detailed_results =  args.return_detailed_results)
     cellnames = ['B1','B2', 'E1', 'E4', 'ER1','ER2','ER3','ER4','ER5','ER6',
                      'L2','L4', 'M1','M2', 'M3', 'M4', 'M5', 'M6',
                      'MO2','PL2','PL3','U1','U4']
