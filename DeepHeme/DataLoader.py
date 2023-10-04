@@ -2,7 +2,7 @@ import albumentations
 
 import cv2
 import numpy as np
-
+import os
 import torch
 from torch.utils.data import DataLoader
 from torch.utils import data
@@ -34,6 +34,7 @@ class Img_DataLoader(data.Dataset):
         img_path = self.file_paths[index]
         # prepare image
         print(img_path)
+        assert os.path.exists(img_path), "The image path does not exist"
         orig_img = cv2.imread(img_path)
         print(orig_img.shape)
         image = cv2.cvtColor(orig_img, cv2.COLOR_BGR2RGB)
