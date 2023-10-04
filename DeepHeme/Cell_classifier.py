@@ -189,9 +189,10 @@ def main(args):
     My_model = model_create(num_classes = 23, path = '/home/harry/Documents/HemeYolo/Classification/weights.ckpt')
     cell_types_df, cellnames= df_create()
     My_model = My_model.cuda().eval()
+    print('How many images are there in total: {}'.format(len(Image_dirs))
     Orig_img = Img_DataLoader(img_list=Image_dirs, split='viz', df=cell_types_df, transform=transform_pipeline)
     shuffle = False
-    dataloader = DataLoader(Orig_img, batch_size=1024, num_workers=2, shuffle=shuffle)
+    dataloader = DataLoader(Orig_img, batch_size=32, num_workers=2, shuffle=shuffle)
     if args.return_detailed_results:
         assert args.save_detailed_table_dir is not None, "Please provide the save_detailed_table_dir"
         labels_numeric, df_result = predition(model=My_model,
