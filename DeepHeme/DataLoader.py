@@ -34,6 +34,7 @@ class Img_DataLoader(data.Dataset):
         img_path = self.file_paths[index]
         # prepare image
         orig_img = cv2.imread(img_path)
+        print(orig_img.shape)
         image = cv2.cvtColor(orig_img, cv2.COLOR_BGR2RGB)
         '''
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
