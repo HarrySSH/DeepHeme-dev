@@ -24,5 +24,6 @@ if __name__ == '__main__':
         deepheme.run()
 
         deepheme.deactive()
+        break
 
 
