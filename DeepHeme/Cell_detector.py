@@ -108,6 +108,9 @@ def main(args):
         patchID = path.split('/')[-1].split('.png')[0]
         
         extract_cell_patches(boxes, savedir,patchID, image)
+    # how many cells are detected in total
+
+    print(f"How many cells are detected in total: {len(glob.glob(savedir+'/*'))}")
         
         
         
